@@ -276,6 +276,10 @@ abstract final class Pref {
     defaultValue: Platform.isAndroid ? '30' : '0',
   );
 
+  /// 音频延迟（秒），正数表示延后音频，负数表示提前
+  static double get audioDelay =>
+      _setting.get(SettingBoxKey.audioDelay, defaultValue: 0.0);
+
   static CDNService get defaultCDNService {
     if (_setting.get(SettingBoxKey.CDNService) case final String cdnName) {
       return CDNService.values.byName(cdnName);

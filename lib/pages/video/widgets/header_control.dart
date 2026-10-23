@@ -36,6 +36,7 @@ import 'package:PiliPlus/pages/video/widgets/header_mixin.dart';
 import 'package:PiliPlus/plugin/pl_player/controller.dart';
 import 'package:PiliPlus/plugin/pl_player/models/data_source.dart';
 import 'package:PiliPlus/plugin/pl_player/models/play_repeat.dart';
+import 'package:PiliPlus/plugin/pl_player/widgets/audio_delay_dialog.dart';
 import 'package:PiliPlus/services/shutdown_timer_service.dart'
     show shutdownTimerService, ShutdownPanel;
 import 'package:PiliPlus/utils/accounts.dart';
@@ -742,13 +743,28 @@ class HeaderControlState extends State<HeaderControl>
                     leading: const Icon(Icons.download_outlined, size: 20),
                     title: const Text('保存字幕', style: titleStyle),
                   ),
-                if (plPlayerController.videoPlayerController case final player?)
+                if (plPlayerController.videoPlayerController
+                    case final player?) ...[
                   ListTile(
                     dense: true,
                     title: const Text('播放信息', style: titleStyle),
                     leading: const Icon(Icons.info_outline, size: 20),
                     onTap: () => showPlayerInfo(context, player: player),
                   ),
+                  ListTile(
+                    dense: true,
+                    title: const Text('音频延迟', style: titleStyle),
+                    subtitle: Text(
+                      '当前: ${audioDelayLabel(player)}',
+                      style: subTitleStyle,
+                    ),
+                    leading: const Icon(Icons.graphic_eq, size: 20),
+                    onTap: () async {
+                      await showAudioDelayDialog(context, player: player);
+                      setState(() {});
+                    },
+                  ),
+                ],
                 ListTile(
                   dense: true,
                   onTap: () {
@@ -776,6 +792,7 @@ class HeaderControlState extends State<HeaderControl>
   }) {
     final hwdec = player.getProperty('hwdec-current');
     final volume = player.getProperty('volume');
+    final audioDelay = player.getProperty('audio-delay');
     showDialog(
       context: context,
       builder: (context) {
@@ -850,6 +867,13 @@ class HeaderControlState extends State<HeaderControl>
                       title: const Text('hwdec'),
                       subtitle: Text(hwdec),
                       onTap: () => Utils.copyText('hwdec\n$hwdec'),
+                    ),
+                    ListTile(
+                      dense: true,
+                      title: const Text('audio-delay'),
+                      subtitle: Text(audioDelay),
+                      onTap: () =>
+                          Utils.copyText('audio-delay\n$audioDelay'),
                     ),
                   ],
                 ),
